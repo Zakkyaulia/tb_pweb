@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPAS - Sistem Informasi Permintaan</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles to handle specific gradients and animations not directly in Tailwind */
+        .sidebar-header {
+            border-bottom: 1px solid #e5e5e5; /* Tailwind's border-b does not accept custom color easily without config */
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, rgba(5, 150, 105, 0.1), rgba(4, 120, 87, 0.1));
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::before {
+            width: 100%;
+        }
+
+        .submenu-link.active {
+            background: linear-gradient(90deg, #f97316, #ea580c);
+            color: white;
+            border-radius: 0 25px 25px 0;
+            margin-right: 16px;
+            font-weight: 500;
+        }
+
+        .main-content {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .table-header {
+            background: linear-gradient(90deg, #f97316, #ea580c);
+        }
+
+        /* Responsive adjustments for sidebar */
+        @media (max-width: 768px) {
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <div class="flex min-h-screen">
+        <div class="sidebar w-64 bg-white shadow-lg relative md:translate-x-0 -translate-x-full transition-transform duration-300 ease-in-out">
+            <div class="sidebar-header p-5 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="logo-icon w-8 h-8 rounded-full flex items-center justify-center text-white text-sm">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="university-name text-xs text-gray-600 font-medium">UNIVERSITAS ANDALAS</div>
+                        <div class="sipas-title text-2xl font-bold text-green-700">SIPAS</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav>
+                <ul class="nav-menu list-none p-0 py-4">
+                    <li class="nav-item mb-1">
+                        <a href="#" class="nav-link flex items-center p-3 text-gray-700 no-underline transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900">
+                            <i class="fas fa-tachometer-alt w-5 mr-3 text-gray-600"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <div class="nav-submenu">
+                            <div class="submenu-header flex items-center justify-between p-3 text-gray-700 cursor-pointer">
+                                <div class="flex items-center">
+                                    <i class="fas fa-file-alt w-5 mr-3 text-gray-600"></i>
+                                    Permintaan
+                                </div>
+                                <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                            </div>
+                            <ul class="submenu-list list-none ml-8">
+                                <li class="submenu-item mb-1">
+                                    <a href="#" class="submenu-link block py-2 px-5 text-gray-700 no-underline text-sm transition-colors duration-200 ease-in-out hover:text-gray-900 active">Diajukan</a>
+                                </li>
+                                <li class="submenu-item mb-1">
+                                    <a href="#" class="submenu-link block py-2 px-5 text-gray-700 no-underline text-sm transition-colors duration-200 ease-in-out hover:text-gray-900">Diproses</a>
+                                </li>
+                                <li class="submenu-item mb-1">
+                                    <a href="#" class="submenu-link block py-2 px-5 text-gray-700 no-underline text-sm transition-colors duration-200 ease-in-out hover:text-gray-900">Disetujui</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a href="#" class="nav-link flex items-center p-3 text-gray-700 no-underline transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900">
+                            <i class="fas fa-file-contract w-5 mr-3 text-gray-600"></i>
+                            Template
+                        </a>
+                    </li>
+                    <li class="nav-item mb-1">
+                        <a href="#" class="nav-link flex items-center p-3 text-gray-700 no-underline transition-all duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900">
+                            <i class="fas fa-bullhorn w-5 mr-3 text-gray-600"></i>
+                            Pengumuman
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="main-content flex-1 p-6">
+            <div class="main-header flex justify-between items-center mb-6">
+                <h1 class="page-title text-3xl font-semibold text-white">Permintaan - Diajukan</h1>
+                <i class="fas fa-user-circle user-icon text-white text-2xl cursor-pointer transition-colors duration-200 ease-in-out hover:text-green-100"></i>
+            </div>
+
+            <div class="content-card bg-white rounded-xl shadow-lg p-8 animate-fade-in">
+                <div class="search-container mb-8 max-w-md">
+                    <div class="relative">
+                        <input
+                            type="text"
+                            placeholder="Cari"
+                            class="search-input w-full py-3 pl-10 pr-4 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-green-600 focus:ring-4 focus:ring-green-100 transition-colors duration-200 ease-in-out"
+                            id="searchInput"
+                        >
+                        <i class="fas fa-search search-icon absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="table-container overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="data-table w-full border-collapse">
+                        <thead class="table-header">
+                            <tr>
+                                <th class="p-4 text-left text-sm font-semibold text-white tracking-wide">No</th>
+                                <th class="p-4 text-left text-sm font-semibold text-white tracking-wide">Nama</th>
+                                <th class="p-4 text-left text-sm font-semibold text-white tracking-wide">Jenis Surat</th>
+                                <th class="p-4 text-left text-sm font-semibold text-white tracking-wide">Isi Form</th>
+                                <th class="p-4 text-left text-sm font-semibold text-white tracking-wide">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body" id="tableBody">
+                            <tr>
+                                <td colspan="5" class="empty-state p-6 text-gray-500 text-center italic">
+                                    Tidak ada data permintaan yang diajukan
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function(e) {
+                console.log('Searching for:', e.target.value);
+                // Implement search logic here
+            });
+
+            // Menu interactions (keeping original JS for now, as Tailwind doesn't replace behavior)
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(4px)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+
+            // Submenu links
+            const submenuLinks = document.querySelectorAll('.submenu-link');
+            submenuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all submenu links
+                    submenuLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Update page title
+                    const pageTitle = document.querySelector('.page-title');
+                    pageTitle.textContent = `Permintaan - ${this.textContent}`;
+                });
+            });
+
+            // Add some sample data functionality
+            function addSampleData() {
+                const tableBody = document.getElementById('tableBody');
+                const sampleData = [
+                    { no: 1, nama: 'John Doe', jenis: 'Surat Keterangan', form: 'Lengkap', status: 'Pending' },
+                    { no: 2, nama: 'Jane Smith', jenis: 'Surat Rekomendasi', form: 'Lengkap', status: 'Review' }
+                ];
+
+                if (sampleData.length > 0) {
+                    tableBody.innerHTML = '';
+                    sampleData.forEach(data => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="p-6 text-gray-700 text-sm text-center">${data.no}</td>
+                            <td class="p-6 text-gray-700 text-sm text-center">${data.nama}</td>
+                            <td class="p-6 text-gray-700 text-sm text-center">${data.jenis}</td>
+                            <td class="p-6 text-gray-700 text-sm text-center">${data.form}</td>
+                            <td class="p-6 text-gray-700 text-sm text-center">${data.status}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            }
+
+            // Uncomment the line below to add sample data
+            addSampleData();
+        });
+    </script>
+</body>
+</html>
