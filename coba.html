@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>TOPSIS Dinamis</title>
+  <style>
+    input { margin: 4px; }
+    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 4px; }
+  </style>
+</head>
+<body>
+
+  <h2>Input Bobot Kriteria</h2>
+  <div id="bobot-form">
+    <label>C1: <input type="number" step="any" id="bobot1"></label>
+    <label>C2: <input type="number" step="any" id="bobot2"></label>
+    <label>C3: <input type="number" step="any" id="bobot3"></label>
+    <label>C4: <input type="number" step="any" id="bobot4"></label>
+    <label>C5: <input type="number" step="any" id="bobot5"></label>
+  </div>
+
+  <h2>Input Alternatif</h2>
+  <div id="alternatif-form">
+    <input type="text" id="nama" placeholder="Nama Alternatif">
+    <input type="number" id="c1" placeholder="C1">
+    <input type="number" id="c2" placeholder="C2">
+    <input type="number" id="c3" placeholder="C3">
+    <input type="number" id="c4" placeholder="C4">
+    <input type="number" id="c5" placeholder="C5">
+    <button onclick="tambahAlternatif()">Tambah Alternatif</button>
+  </div>
+
+  <h3>Data Alternatif</h3>
+  <table id="tabel-alternatif">
+    <thead>
+      <tr><th>Nama</th><th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <br>
+  <button onclick="prosesTopsis()">Hitung TOPSIS</button>
+
+  <h3>Hasil Ranking:</h3>
+  <div id="hasil-ranking"></div>
+
+  <script>
+    const alternatif = [];
+
+    function tambahAlternatif() {
+      const nama = document.getElementById('nama').value;
+      const c1 = parseFloat(document.getElementById('c1').value);
+      const c2 = parseFloat(document.getElementById('c2').value);
+      const c3 = parseFloat(document.getElementById('c3').value);
+      const c4 = parseFloat(document.getElementById('c4').value);
+      const c5 = parseFloat(document.getElementById('c5').value);
+
+      if (!nama || isNaN(c1) || isNaN(c2) || isNaN(c3) || isNaN(c4) || isNaN(c5)) {
+        alert("Isi semua nilai!");
+        return;
+      }
+
+      alternatif.push({ nama, nilai: [c1, c2, c3, c4, c5] });
+
+      const row = `<tr><td>${nama}</td><td>${c1}</td><td>${c2}</td><td>${c3}</td><td>${c4}</td><td>${c5}</td></tr>`;
+      document.querySelector("#tabel-alternatif tbody").innerHTML += row;
+
+      document.getElementById('alternatif-form').querySelectorAll("input").forEach(i => i.value = '');
+    }
+
+    function prosesTopsis() {
+      const bobot = [
+        parseFloat(document.getElementById('bobot1').value),
+        parseFloat(document.getElementById('bobot2').value),
+        parseFloat(document.getElementById('bobot3').value),
+        parseFloat(document.getElementById('bobot4').value),
+        parseFloat(document.getElementById('bobot5').value),
+      ];
+
+      if (bobot.some(b => isNaN(b))) {
+        alert("Semua bobot harus diisi!");
+        return;
+      }
+
+      const matrix = alternatif.map(a => a.nilai);
+
+      const denom = matrix[0].map((_, j) => Math.sqrt(matrix.reduce((sum, r) => sum + r[j] ** 2, 0)));
+      const normal = matrix.map(row => row.map((v, j) => v / denom[j]));
+      const terbobot = normal.map(row => row.map((v, j) => v * bobot[j]));
+
+      const idealPos = terbobot[0].map((_, j) => Math.max(...terbobot.map(r => r[j])));
+      const idealNeg = terbobot[0].map((_, j) => Math.min(...terbobot.map(r => r[j])));
+
+      const dPlus = terbobot.map(row => Math.sqrt(row.reduce((sum, v, j) => sum + (v - idealPos[j]) ** 2, 0)));
+      const dMinus = terbobot.map(row => Math.sqrt(row.reduce((sum, v, j) => sum + (v - idealNeg[j]) ** 2, 0)));
+
+      const preferensi = dMinus.map((dMin, i) => dMin / (dMin + dPlus[i]));
+
+      const ranking = alternatif.map((a, i) => ({ nama: a.nama, nilai: preferensi[i] }))
+                                .sort((a, b) => b.nilai - a.nilai);
+
+      let html = "<ol>";
+      ranking.forEach(r => {
+        html += `<li>${r.nama} (V: ${r.nilai.toFixed(4)})</li>`;
+      });
+      html += "</ol>";
+
+      document.getElementById("hasil-ranking").innerHTML = html;
+    }
+  </script>
+
+</body>
+</html>
